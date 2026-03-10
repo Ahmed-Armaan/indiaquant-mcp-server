@@ -1,10 +1,8 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-//import { CreateMcpServer } from './mcp/server.js';
-import { getMarketPrice } from './services/marketData.js';
+import { CreateMcpServer } from './mcp/server.js';
+import { dbInit } from './portfolio/db.js';
 
-//const server = CreateMcpServer();
-//const transport = new StdioServerTransport();
-//await server.connect(transport);
-
-console.log('Executing');
-getMarketPrice('AAPL')
+dbInit();
+const server = CreateMcpServer();
+const transport = new StdioServerTransport();
+await server.connect(transport);
