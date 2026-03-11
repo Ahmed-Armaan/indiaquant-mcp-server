@@ -192,7 +192,7 @@ function computeGreeks(
 }
 
 export async function calculateGreeks(symbol: string): Promise<GreeksResult> {
-	const cached = cache.getGreeks<GreeksResult>(symbol);
+	const cached = cache.getGreeks(symbol);
 	if (cached) return cached;
 
 	const data = await yahooFinance.options(symbol);
@@ -210,7 +210,7 @@ export async function calculateGreeks(symbol: string): Promise<GreeksResult> {
 			if (!g) return null;
 			return { symbol: c.contractSymbol, strike: c.strike, ...g };
 		})
-		.filter(Boolean);
+		.filter((x): x is NonNullable<typeof x> => x !== null);
 
 	const puts = firstExpiry.puts
 		.map(p => {
@@ -218,7 +218,7 @@ export async function calculateGreeks(symbol: string): Promise<GreeksResult> {
 			if (!g) return null;
 			return { symbol: p.contractSymbol, strike: p.strike, ...g };
 		})
-		.filter(Boolean);
+		.filter((x): x is NonNullable<typeof x> => x !== null);
 
 	const result = {
 		symbol,
