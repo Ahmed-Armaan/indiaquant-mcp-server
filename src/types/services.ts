@@ -59,3 +59,21 @@ export interface ScanResult {
 	volume: number;
 	signal?: string;
 }
+
+
+export interface OptionGreeks {
+	symbol: string;   // contract symbol e.g. "RELIANCE251225C1400"
+	strike: number;
+	delta: number;
+	gamma: number;
+	theta: number;
+	vega: number;
+}
+
+export interface GreeksResult {
+	symbol: string;
+	underlyingPrice: number;
+	expiration: Date;
+	calls: OptionGreeks[];
+	puts: OptionGreeks[];
+}

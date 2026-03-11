@@ -1,6 +1,7 @@
 import type { MarketData } from "../types/services.js";
 import type { OptionsChainData } from "../types/services.js";
 import type { SentimentResult } from "../types/services.js";
+import type { GreeksResult } from "../types/services.js";
 
 interface CacheEntry<T> {
 	value: T;
@@ -16,6 +17,7 @@ class Cache {
 	private marketCache: CacheType<MarketData>;
 	private optionsChanCache: CacheType<OptionsChainData>;
 	private sentimentCache: CacheType<SentimentResult>;
+	private greeksCache: CacheType<GreeksResult>;
 
 	constructor() {
 		this.marketCache = {
@@ -31,6 +33,11 @@ class Cache {
 		this.sentimentCache = {
 			cache: new Map(),
 			ttlMs: 5 * 60_000
+		};
+
+		this.greeksCache = {
+			cache: new Map<string, CacheEntry<GreeksResult>>(),
+			ttlMs: 5 * 60_000,
 		};
 	}
 
@@ -85,6 +92,23 @@ class Cache {
 		if (!entry) return null;
 		if (Date.now() > entry.expiry) {
 			this.sentimentCache.cache.delete(symbol);
+			return null;
+		}
+		return entry.value;
+	}
+
+	setGreeks(symbol: string, value: GreeksResult) {
+		this.greeksCache.cache.set(symbol, {
+			value,
+			expiry: Date.now() + this.greeksCache.ttlMs,
+		});
+	}
+
+	getGreeks(symbol: string): GreeksResult | null {
+		const entry = this.greeksCache.cache.get(symbol);
+		if (!entry) return null;
+		if (Date.now() > entry.expiry) {
+			this.greeksCache.cache.delete(symbol);
 			return null;
 		}
 		return entry.value;
